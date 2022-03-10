@@ -12,7 +12,7 @@ const   bit<16>   ETHERNET_TYPE_IPV4    =   16w0x0800;
 
 const   bit<8>  IP_PROTOCOL_TCP =   8w0x6;
 const   bit<8>  IP_PROTOCOL_UDP =   8w0x11;
-
+const   bit<64> GRPC_PREAMBLE   =   64w0x1122334455667788;
 
 /* Header*/
 struct metadata_t { 
@@ -20,6 +20,8 @@ struct metadata_t {
 }
 
 struct headers {
+    packet_in_header_t packet_in_header;
+    packet_out_header_t packet_out_header;
     ethernet_t ethernet;
     arp_rarp_t arp_rarp;
     arp_rarp_ipv4_t arp_rarp_ipv4;
@@ -30,9 +32,16 @@ struct headers {
 
 parser MyParser(packet_in packet, out headers hdr, inout metadata_t metadata, inout standard_metadata_t standard_metadata) {
     state start {
+        transition select(packet.lookahead<bit<64>>()) {
+            GRPC_PREAMBLE: parse_packet_out_header;
+            default: parse_ethernet;
+        }
+    }
+    state parse_packet_out_header {
+        packet.extract(hdr.packet_out_header);
         transition parse_ethernet;
     }
-
+    
     state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
@@ -77,6 +86,8 @@ parser MyParser(packet_in packet, out headers hdr, inout metadata_t metadata, in
 
 control MyDeparser(packet_out packet, in headers hdr) { 
     apply {
+        packet.emit(hdr.packet_in_header);
+        packet.emit(hdr.packet_out_header);
         packet.emit(hdr.ethernet);
         packet.emit(hdr.arp_rarp);
         packet.emit(hdr.arp_rarp_ipv4);

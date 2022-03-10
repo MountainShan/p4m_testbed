@@ -7,6 +7,22 @@ typedef bit<32>  ip4Addr_t;
 typedef bit<9>   PortID_t;
 typedef bit<32>  SessionID_t;
 
+@controller_header("packet_in")
+header  packet_in_header_t {
+    bit<64>     preamble;
+    bit<16>     device_id;
+    bit<16>     header_type;
+    bit<16>     port;
+}
+
+@controller_header("packet_out")
+header  packet_out_header_t {
+    bit<64>     preamble;
+    bit<16>     device_id;
+    bit<16>     header_type;
+    bit<16>     port;
+}
+
 header ethernet_t {
     macAddr_t   dstAddr;
     macAddr_t   srcAddr;

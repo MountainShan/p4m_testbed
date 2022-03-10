@@ -13,6 +13,9 @@ control MyIngress(inout headers hdr,inout metadata_t metadata,inout standard_met
     action set_output (PortID_t port) {
         standard_metadata.egress_spec = port;
     }
+    action packet_in_message (PortID_t port) {
+        standard_metadata.egress_spec = port;
+    }
     /*
     table <table_name> {
         key = {
@@ -24,18 +27,40 @@ control MyIngress(inout headers hdr,inout metadata_t metadata,inout standard_met
         default_action = <action_name>(<input>);
     }
     */
+    table arp_forwarding {
+        key = {
+            hdr.arp_rarp_ipv4.srcProtoAddr: exact;
+            hdr.arp_rarp_ipv4.dstProtoAddr: exact;
+        } 
+        actions = {
+            drop;
+            set_output;
+        }
+        default_action = drop();
+    }
+    table ipv4_forwarding {
+        key = {
+            hdr.ipv4.srcAddr: exact;
+            hdr.ipv4.dstAddr: exact;
+        } 
+        actions = {
+            drop;
+            set_output;
+        }
+        default_action = drop();
+    }
     apply { 
         /*
         <action_name>.apply();
         */
+        if (hdr.ipv4.isValid())
+            ipv4_forwarding.apply();
+        else if (hdr.arp_rarp_ipv4.isValid())
+            arp_forwarding.apply();
     }
 } 
 
-control MyEgress(inout headers hdr,inout metadata_t metadata,inout standard_metadata_t standard_metadata) { 
-    apply { 
- 
-    } 
-}
+control MyEgress(inout headers hdr,inout metadata_t metadata,inout standard_metadata_t standard_metadata) {  apply {  } }
 
 control MyComputeChecksum(inout headers  hdr, inout metadata_t metadata) { 
     apply {

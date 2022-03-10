@@ -1,5 +1,132 @@
 pkg_info {
   arch: "v1model"
 }
+tables {
+  preamble {
+    id: 46963962
+    name: "MyIngress.arp_forwarding"
+    alias: "arp_forwarding"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.arp_rarp_ipv4.srcProtoAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdr.arp_rarp_ipv4.dstProtoAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 25652968
+  }
+  action_refs {
+    id: 21240661
+  }
+  size: 1024
+}
+tables {
+  preamble {
+    id: 34689979
+    name: "MyIngress.ipv4_forwarding"
+    alias: "ipv4_forwarding"
+  }
+  match_fields {
+    id: 1
+    name: "hdr.ipv4.srcAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  match_fields {
+    id: 2
+    name: "hdr.ipv4.dstAddr"
+    bitwidth: 32
+    match_type: EXACT
+  }
+  action_refs {
+    id: 25652968
+  }
+  action_refs {
+    id: 21240661
+  }
+  size: 1024
+}
+actions {
+  preamble {
+    id: 25652968
+    name: "MyIngress.drop"
+    alias: "drop"
+  }
+}
+actions {
+  preamble {
+    id: 21240661
+    name: "MyIngress.set_output"
+    alias: "set_output"
+  }
+  params {
+    id: 1
+    name: "port"
+    bitwidth: 9
+  }
+}
+controller_packet_metadata {
+  preamble {
+    id: 81826293
+    name: "packet_in"
+    alias: "packet_in"
+    annotations: "@controller_header(\"packet_in\")"
+  }
+  metadata {
+    id: 1
+    name: "preamble"
+    bitwidth: 64
+  }
+  metadata {
+    id: 2
+    name: "device_id"
+    bitwidth: 16
+  }
+  metadata {
+    id: 3
+    name: "header_type"
+    bitwidth: 16
+  }
+  metadata {
+    id: 4
+    name: "port"
+    bitwidth: 16
+  }
+}
+controller_packet_metadata {
+  preamble {
+    id: 76689799
+    name: "packet_out"
+    alias: "packet_out"
+    annotations: "@controller_header(\"packet_out\")"
+  }
+  metadata {
+    id: 1
+    name: "preamble"
+    bitwidth: 64
+  }
+  metadata {
+    id: 2
+    name: "device_id"
+    bitwidth: 16
+  }
+  metadata {
+    id: 3
+    name: "header_type"
+    bitwidth: 16
+  }
+  metadata {
+    id: 4
+    name: "port"
+    bitwidth: 16
+  }
+}
 type_info {
 }
