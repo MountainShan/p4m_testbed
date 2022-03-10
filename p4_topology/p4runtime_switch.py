@@ -39,6 +39,7 @@ class P4RuntimeSwitch(P4Switch):
                  device_id = None,
                  enable_debugger = False,
                  log_file = None,
+                 cpu_port = None, 
                  **kwargs):
         Switch.__init__(self, name, **kwargs)
         assert (sw_path)
@@ -66,7 +67,9 @@ class P4RuntimeSwitch(P4Switch):
         else:
             self.thrift_port = P4RuntimeSwitch.next_thrift_port
             P4RuntimeSwitch.next_thrift_port += 1
-
+        if cpu_port is not None:
+            self.cpu_port = cpu_port
+        
         if check_listening_on_port(self.grpc_port):
             error('%s cannot bind port %d because it is bound by another process\n' % (self.name, self.grpc_port))
             exit(1)
@@ -122,6 +125,8 @@ class P4RuntimeSwitch(P4Switch):
             args.append('--thrift-port ' + str(self.thrift_port))
         if self.grpc_port:
             args.append("-- --grpc-server-addr 0.0.0.0:" + str(self.grpc_port))
+        if self.cpu_port:
+            args.append('--cpu-port ' + str(self.cpu_port))
         cmd = ' '.join(args)
         info(cmd + "\n")
 

@@ -22,7 +22,7 @@ class P4_Controller:
                 0,  # action (0 = Insert, 1 = Modify, 2 = Delete)
                 0,  # messagae_type (0 = Flow entries)
                 p4info.buildTableEntry(
-                    table_name=""   # <control_block>.<table_name>
+                    table_name="",   # <control_block>.<table_name>
                     match_fields={ }, 
                     action_name="", # <control_block>.<action_name>
                     action_params={}
@@ -31,7 +31,26 @@ class P4_Controller:
         )
         """
         return table_entries
-
+    def _write_arp_forwarding_rules(self, p4info, source, destination, port):
+        """ ... """
+        table_entries = []
+        table_entries.append((0, 0, p4info.buildTableEntry(
+            table_name="MyIngress.arp_forwarding",
+            match_fields={ "hdr.arp_rarp_ipv4.srcProtoAddr": source, "hdr.arp_rarp_ipv4.dstProtoAddr": destination}, 
+            action_name="MyIngress.set_output",
+            action_params={"port": port} )))
+        return table_entries
+    
+    def _write_ipv4_forwarding_rules(self, p4info, source, destination, port):
+        """ ... """
+        table_entries = []
+        table_entries.append((0, 0, p4info.buildTableEntry(
+            table_name="MyIngress.ipv4_forwarding",
+            match_fields={ "hdr.ipv4.srcAddr": source, "hdr.ipv4.dstAddr": destination}, 
+            action_name="MyIngress.set_output",
+            action_params={"port": port} )))
+        return table_entries
+    
     def arp_packet_handler(self, response):
         """ ... """
         pass
@@ -42,10 +61,11 @@ class P4_Controller:
             for response in self.switches[sw_id]["gRPC"].stream_msg_resp:
                 if (response):
                     """
-                    Message = response.payload
-                    Metadata = response.metadata
+                    Message = response.packet.payload
+                    Metadata = response.packet.metadata
                     self.arp_packet_handler(response)
                     """
+                    self.switches[sw_id]["gRPC"].PacketOut(payload, metadata)
                     pass
         except grpc.RpcError as e:
             printGrpcError(e,sw_id)
@@ -64,6 +84,15 @@ class P4_Controller:
             print(" >>> Start monitoring ports and flows. ")
             # Default Entries
             ''' ... '''
+            fe = []
+            sw = 1
+            grpc_connection = self.switches[sw]["gRPC"]
+            p4info = self.switches[sw]["p4info"]
+            fe += self._write_arp_forwarding_rules(p4info, "10.0.0.11", "10.0.0.12", 2)
+            fe += self._write_arp_forwarding_rules(p4info, "10.0.0.12", "10.0.0.11", 1)
+            fe += self._write_ipv4_forwarding_rules(p4info, "10.0.0.11", "10.0.0.12", 2)
+            fe += self._write_ipv4_forwarding_rules(p4info, "10.0.0.12", "10.0.0.11", 1)
+            grpc_connection.WriteTableEntry(fe)
             # Waiting for packet in event
             while(True):
                 sleep(1)

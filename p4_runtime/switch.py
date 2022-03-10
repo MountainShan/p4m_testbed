@@ -119,17 +119,7 @@ class SwitchConnection(object):
         try:
             while (self.channel_ready_flag==False):
                 pass
-            self.client_stub.Write(request, timeout=5)
-        except grpc.RpcError as e:
-            printGrpcError(e, self.device_id)
-    
-    def PacketIn (self):
-        try:
-            while (self.channel_ready_flag==False):
-                pass
-            self.requests_stream.put(p4runtime_pb2.StreamMessageRequest())
-            for item in self.stream_msg_resp:
-                return item
+            self.client_stub.Write(request, timeout=1)
         except grpc.RpcError as e:
             printGrpcError(e, self.device_id)
     
