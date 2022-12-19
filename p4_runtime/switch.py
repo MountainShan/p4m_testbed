@@ -82,15 +82,15 @@ class SwitchConnection(object):
 
         config.p4info.CopyFrom(p4info)
         config.p4_device_config = device_config.SerializeToString()
-        if action == 0:
+        if action == "VERIFY":
             request.action = p4runtime_pb2.SetForwardingPipelineConfigRequest.VERIFY
-        elif action == 1:
+        elif action == "VERIFY_AND_SAVE":
             request.action = p4runtime_pb2.SetForwardingPipelineConfigRequest.VERIFY_AND_SAVE
-        elif action == 2:
+        elif action == "VERIFY_AND_COMMIT":
             request.action = p4runtime_pb2.SetForwardingPipelineConfigRequest.VERIFY_AND_COMMIT
-        elif action == 3:
+        elif action == "COMMIT":
             request.action = p4runtime_pb2.SetForwardingPipelineConfigRequest.COMMIT
-        elif action == 4:
+        elif action == "RECONCILE_AND_COMMIT":
             request.action = p4runtime_pb2.SetForwardingPipelineConfigRequest.RECONCILE_AND_COMMIT
         try:
             while (self.channel_ready_flag==False):
@@ -103,19 +103,19 @@ class SwitchConnection(object):
         request = p4runtime_pb2.WriteRequest()
         request.device_id = self.device_id
         request.election_id.low = self.low
-        for action, message_type, entry in table_entries:
+        for entity_action_type, entity_message_type, entry_information in table_entries:
             update = request.updates.add()
-            if action == 0:
+            if entity_action_type == 1:
                 update.type = p4runtime_pb2.Update.INSERT
-            elif action == 1:
+            elif entity_action_type == 2:
                 update.type = p4runtime_pb2.Update.MODIFY
-            elif action == 2:
+            elif entity_action_type == 3:
                 update.type = p4runtime_pb2.Update.DELETE
             
-            if (message_type == 0):
-                update.entity.table_entry.CopyFrom(entry)
-            elif (message_type == 1):
-                update.entity.packet_replication_engine_entry.CopyFrom(entry)
+            if (entity_message_type == 2):
+                update.entity.table_entry.CopyFrom(entry_information)
+            elif (entity_message_type == 9):
+                update.entity.packet_replication_engine_entry.CopyFrom(entry_information)
         try:
             while (self.channel_ready_flag==False):
                 pass

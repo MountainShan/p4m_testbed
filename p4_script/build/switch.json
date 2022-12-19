@@ -3,10 +3,7 @@
     {
       "name" : "scalars_0",
       "id" : 0,
-      "fields" : [
-        ["tmp_0", 64, false],
-        ["userMetadata.l4_packet_length", 16, false]
-      ]
+      "fields" : []
     },
     {
       "name" : "standard_metadata",
@@ -32,28 +29,8 @@
       ]
     },
     {
-      "name" : "packet_in_header_t",
-      "id" : 2,
-      "fields" : [
-        ["preamble", 64, false],
-        ["device_id", 16, false],
-        ["header_type", 16, false],
-        ["port", 16, false]
-      ]
-    },
-    {
-      "name" : "packet_out_header_t",
-      "id" : 3,
-      "fields" : [
-        ["preamble", 64, false],
-        ["device_id", 16, false],
-        ["header_type", 16, false],
-        ["port", 16, false]
-      ]
-    },
-    {
       "name" : "ethernet_t",
-      "id" : 4,
+      "id" : 2,
       "fields" : [
         ["dstAddr", 48, false],
         ["srcAddr", 48, false],
@@ -61,20 +38,14 @@
       ]
     },
     {
-      "name" : "arp_rarp_t",
-      "id" : 5,
+      "name" : "arp_t",
+      "id" : 3,
       "fields" : [
         ["hwtype", 16, false],
         ["protoType", 16, false],
         ["hwAddrLen", 8, false],
         ["protoAddrLen", 8, false],
-        ["opcode", 16, false]
-      ]
-    },
-    {
-      "name" : "arp_rarp_ipv4_t",
-      "id" : 6,
-      "fields" : [
+        ["opcode", 16, false],
         ["srcHwAddr", 48, false],
         ["srcProtoAddr", 32, false],
         ["dstHwAddr", 48, false],
@@ -83,7 +54,7 @@
     },
     {
       "name" : "ipv4_t",
-      "id" : 7,
+      "id" : 4,
       "fields" : [
         ["version", 4, false],
         ["ihl", 4, false],
@@ -97,32 +68,6 @@
         ["hdrChecksum", 16, false],
         ["srcAddr", 32, false],
         ["dstAddr", 32, false]
-      ]
-    },
-    {
-      "name" : "tcp_t",
-      "id" : 8,
-      "fields" : [
-        ["srcPort", 16, false],
-        ["dstPort", 16, false],
-        ["seqNo", 32, false],
-        ["ackNo", 32, false],
-        ["dataOffset", 4, false],
-        ["res", 4, false],
-        ["flags", 8, false],
-        ["window", 16, false],
-        ["checksum", 16, false],
-        ["urgentPtr", 16, false]
-      ]
-    },
-    {
-      "name" : "udp_t",
-      "id" : 9,
-      "fields" : [
-        ["srcPort", 16, false],
-        ["dstPort", 16, false],
-        ["length", 16, false],
-        ["checksum", 16, false]
       ]
     }
   ],
@@ -142,58 +87,23 @@
       "pi_omit" : true
     },
     {
-      "name" : "packet_in_header",
-      "id" : 2,
-      "header_type" : "packet_in_header_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "packet_out_header",
-      "id" : 3,
-      "header_type" : "packet_out_header_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
       "name" : "ethernet",
-      "id" : 4,
+      "id" : 2,
       "header_type" : "ethernet_t",
       "metadata" : false,
       "pi_omit" : true
     },
     {
-      "name" : "arp_rarp",
-      "id" : 5,
-      "header_type" : "arp_rarp_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "arp_rarp_ipv4",
-      "id" : 6,
-      "header_type" : "arp_rarp_ipv4_t",
+      "name" : "arp",
+      "id" : 3,
+      "header_type" : "arp_t",
       "metadata" : false,
       "pi_omit" : true
     },
     {
       "name" : "ipv4",
-      "id" : 7,
+      "id" : 4,
       "header_type" : "ipv4_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "tcp",
-      "id" : 8,
-      "header_type" : "tcp_t",
-      "metadata" : false,
-      "pi_omit" : true
-    },
-    {
-      "name" : "udp",
-      "id" : 9,
-      "header_type" : "udp_t",
       "metadata" : false,
       "pi_omit" : true
     }
@@ -226,69 +136,6 @@
             {
               "parameters" : [
                 {
-                  "type" : "field",
-                  "value" : ["scalars", "tmp_0"]
-                },
-                {
-                  "type" : "lookahead",
-                  "value" : [0, 64]
-                }
-              ],
-              "op" : "set"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "hexstr",
-              "value" : "0x1122334455667788",
-              "mask" : null,
-              "next_state" : "parse_packet_out_header"
-            },
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : "parse_ethernet"
-            }
-          ],
-          "transition_key" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            }
-          ]
-        },
-        {
-          "name" : "parse_packet_out_header",
-          "id" : 1,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "packet_out_header"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : "parse_ethernet"
-            }
-          ],
-          "transition_key" : []
-        },
-        {
-          "name" : "parse_ethernet",
-          "id" : 2,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
                   "type" : "regular",
                   "value" : "ethernet"
                 }
@@ -301,7 +148,7 @@
               "type" : "hexstr",
               "value" : "0x0806",
               "mask" : null,
-              "next_state" : "parse_arp_rarp"
+              "next_state" : "parse_arp"
             },
             {
               "type" : "hexstr",
@@ -324,49 +171,14 @@
           ]
         },
         {
-          "name" : "parse_arp_rarp",
-          "id" : 3,
+          "name" : "parse_arp",
+          "id" : 1,
           "parser_ops" : [
             {
               "parameters" : [
                 {
                   "type" : "regular",
-                  "value" : "arp_rarp"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "hexstr",
-              "value" : "0x0800",
-              "mask" : null,
-              "next_state" : "arp_rarp_ipv4"
-            },
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : null
-            }
-          ],
-          "transition_key" : [
-            {
-              "type" : "field",
-              "value" : ["arp_rarp", "protoType"]
-            }
-          ]
-        },
-        {
-          "name" : "arp_rarp_ipv4",
-          "id" : 4,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "arp_rarp_ipv4"
+                  "value" : "arp"
                 }
               ],
               "op" : "extract"
@@ -384,114 +196,13 @@
         },
         {
           "name" : "parse_ipv4",
-          "id" : 5,
+          "id" : 2,
           "parser_ops" : [
             {
               "parameters" : [
                 {
                   "type" : "regular",
                   "value" : "ipv4"
-                }
-              ],
-              "op" : "extract"
-            },
-            {
-              "parameters" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "userMetadata.l4_packet_length"]
-                },
-                {
-                  "type" : "expression",
-                  "value" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "&",
-                      "left" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "+",
-                          "left" : {
-                            "type" : "field",
-                            "value" : ["ipv4", "totalLen"]
-                          },
-                          "right" : {
-                            "type" : "hexstr",
-                            "value" : "0xffec"
-                          }
-                        }
-                      },
-                      "right" : {
-                        "type" : "hexstr",
-                        "value" : "0xffff"
-                      }
-                    }
-                  }
-                }
-              ],
-              "op" : "set"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "hexstr",
-              "value" : "0x06",
-              "mask" : null,
-              "next_state" : "parse_tcp"
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x11",
-              "mask" : null,
-              "next_state" : "parse_udp"
-            },
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : null
-            }
-          ],
-          "transition_key" : [
-            {
-              "type" : "field",
-              "value" : ["ipv4", "protocol"]
-            }
-          ]
-        },
-        {
-          "name" : "parse_tcp",
-          "id" : 6,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "tcp"
-                }
-              ],
-              "op" : "extract"
-            }
-          ],
-          "transitions" : [
-            {
-              "type" : "default",
-              "value" : null,
-              "mask" : null,
-              "next_state" : null
-            }
-          ],
-          "transition_key" : []
-        },
-        {
-          "name" : "parse_udp",
-          "id" : 7,
-          "parser_ops" : [
-            {
-              "parameters" : [
-                {
-                  "type" : "regular",
-                  "value" : "udp"
                 }
               ],
               "op" : "extract"
@@ -516,77 +227,19 @@
       "name" : "deparser",
       "id" : 0,
       "source_info" : {
-        "filename" : "./include/parser.p4",
-        "line" : 87,
+        "filename" : "./switch.p4",
+        "line" : 51,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
-      "order" : ["packet_in_header", "packet_out_header", "ethernet", "arp_rarp", "arp_rarp_ipv4", "ipv4", "tcp", "udp"],
+      "order" : ["ethernet", "arp", "ipv4"],
       "primitives" : []
     }
   ],
   "meter_arrays" : [],
   "counter_arrays" : [],
   "register_arrays" : [],
-  "calculations" : [
-    {
-      "name" : "calc",
-      "id" : 0,
-      "source_info" : {
-        "filename" : "./switch.p4",
-        "line" : 67,
-        "column" : 8,
-        "source_fragment" : "update_checksum( ..."
-      },
-      "algo" : "csum16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv4", "version"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "ihl"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "diffserv"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "totalLen"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "identification"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "flags"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "fragOffset"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dscp"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "protocol"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "srcAddr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv4", "dstAddr"]
-        }
-      ]
-    }
-  ],
+  "calculations" : [],
   "learn_lists" : [],
   "actions" : [
     {
@@ -702,7 +355,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "./switch.p4",
-        "line" : 9,
+        "line" : 7,
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
@@ -713,7 +366,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "./switch.p4",
-            "line" : 41,
+            "line" : 29,
             "column" : 10,
             "source_fragment" : "ipv4_forwarding"
           },
@@ -756,21 +409,21 @@
           "id" : 1,
           "source_info" : {
             "filename" : "./switch.p4",
-            "line" : 30,
+            "line" : 18,
             "column" : 10,
             "source_fragment" : "arp_forwarding"
           },
           "key" : [
             {
               "match_type" : "exact",
-              "name" : "hdr.arp_rarp_ipv4.srcProtoAddr",
-              "target" : ["arp_rarp_ipv4", "srcProtoAddr"],
+              "name" : "hdr.arp.srcProtoAddr",
+              "target" : ["arp", "srcProtoAddr"],
               "mask" : null
             },
             {
               "match_type" : "exact",
-              "name" : "hdr.arp_rarp_ipv4.dstProtoAddr",
-              "target" : ["arp_rarp_ipv4", "dstProtoAddr"],
+              "name" : "hdr.arp.dstProtoAddr",
+              "target" : ["arp", "dstProtoAddr"],
               "mask" : null
             }
           ],
@@ -802,7 +455,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "./switch.p4",
-            "line" : 56,
+            "line" : 43,
             "column" : 12,
             "source_fragment" : "hdr.ipv4.isValid()"
           },
@@ -825,9 +478,9 @@
           "id" : 1,
           "source_info" : {
             "filename" : "./switch.p4",
-            "line" : 58,
+            "line" : 45,
             "column" : 17,
-            "source_fragment" : "hdr.arp_rarp_ipv4.isValid()"
+            "source_fragment" : "hdr.arp.isValid()"
           },
           "expression" : {
             "type" : "expression",
@@ -836,7 +489,7 @@
               "left" : null,
               "right" : {
                 "type" : "field",
-                "value" : ["arp_rarp_ipv4", "$valid$"]
+                "value" : ["arp", "$valid$"]
               }
             }
           },
@@ -850,7 +503,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "./switch.p4",
-        "line" : 63,
+        "line" : 61,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },
@@ -860,34 +513,7 @@
       "conditionals" : []
     }
   ],
-  "checksums" : [
-    {
-      "name" : "cksum",
-      "id" : 0,
-      "source_info" : {
-        "filename" : "./switch.p4",
-        "line" : 67,
-        "column" : 8,
-        "source_fragment" : "update_checksum( ..."
-      },
-      "target" : ["ipv4", "hdrChecksum"],
-      "type" : "generic",
-      "calculation" : "calc",
-      "verify" : false,
-      "update" : true,
-      "if_cond" : {
-        "type" : "expression",
-        "value" : {
-          "op" : "d2b",
-          "left" : null,
-          "right" : {
-            "type" : "field",
-            "value" : ["ipv4", "$valid$"]
-          }
-        }
-      }
-    }
-  ],
+  "checksums" : [],
   "force_arith" : [],
   "extern_instances" : [],
   "field_aliases" : [
